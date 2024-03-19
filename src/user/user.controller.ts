@@ -7,10 +7,9 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from 'src/auth/auth.service';
-import { UserService } from './user.service';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { LocalAuthGuard } from 'src/auth/local-auth.guard';
 import { Public } from 'src/decorators/public.decorator';
+import { UserService } from './user.service';
 
 @Controller('users')
 export class UserController {
@@ -31,7 +30,6 @@ export class UserController {
     return this.userService.register(body);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('/profile')
   async getProfile(@Request() req) {
     return req.user;
