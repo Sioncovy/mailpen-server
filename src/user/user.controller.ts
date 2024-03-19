@@ -10,6 +10,7 @@ import { AuthService } from 'src/auth/auth.service';
 import { UserService } from './user.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { LocalAuthGuard } from 'src/auth/local-auth.guard';
+import { Public } from 'src/decorators/public.decorator';
 
 @Controller('users')
 export class UserController {
@@ -19,6 +20,7 @@ export class UserController {
   ) {}
 
   @UseGuards(LocalAuthGuard)
+  @Public()
   @Post('/login')
   async login(@Request() req) {
     return this.authService.login(req.user);
