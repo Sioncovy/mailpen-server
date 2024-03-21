@@ -8,4 +8,5 @@ export enum ErrorCode {
   UserCreateError = 1005,
   UserUpdateError = 1006,
   UserDeleteError = 1007,
+  UserAuthError = 1008,
 }

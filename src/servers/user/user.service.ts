@@ -4,14 +4,22 @@ import { Model } from 'mongoose';
 import { User } from './entities/user.entity';
 import { encryptPassword, makeSalt } from 'src/utils';
 import { CreateUserDto } from './dto/create-user.dto';
+import { CommonError } from 'src/errors/common.error';
+import { ErrorCode } from 'src/constants/error-code';
 
 @Injectable()
 export class UserService {
   constructor(@InjectModel('User') private readonly userModel: Model<User>) {}
 
   async register(body: CreateUserDto): Promise<User> {
-    if (body.password.length < 6 || body.password.length > 20) {
-      throw new Error('Password must be 6-20 characters long');
+    if (
+      body.password.length < 6 ||
+      body.password.length > 20 ||
+      !/^\S*(?=\S{6,})(?=\S*\d)(?=\S*[A-Z])(?=\S*[a-z])(?=\S*[!@#$%^&*? ])\S*$/.test(
+        body.password,
+      )
+    ) {
+      throw new CommonError(ErrorCode.UserPasswordError, '密码不符合要求');
     }
     // TODO: 邮箱也要是唯一的
     const isExist = Boolean(
@@ -20,7 +28,7 @@ export class UserService {
       }),
     );
     if (isExist) {
-      throw new Error('Username already exists');
+      throw new CommonError(ErrorCode.UserAlreadyExist, '用户名已存在');
     }
     const user = new this.userModel(body);
     const salt = makeSalt();

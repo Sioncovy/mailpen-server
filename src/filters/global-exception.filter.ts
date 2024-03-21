@@ -15,6 +15,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         ? exception.message
         : 'Internal Server Error';
     let code: ErrorCode | undefined;
+    console.log('filter', message, code);
 
     if (exception instanceof CommonError) {
       code = exception.code;
