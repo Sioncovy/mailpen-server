@@ -6,8 +6,8 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { AuthService } from 'src/auth/auth.service';
-import { LocalAuthGuard } from 'src/auth/local-auth.guard';
+import { AuthService } from 'src/servers/auth/auth.service';
+import { LocalAuthGuard } from 'src/servers/auth/local-auth.guard';
 import { Public } from 'src/decorators/public.decorator';
 import { UserService } from './user.service';
 
@@ -25,6 +25,7 @@ export class UserController {
     return this.authService.login(req.user);
   }
 
+  @Public()
   @Post('/register')
   async register(@Body() body) {
     return this.userService.register(body);

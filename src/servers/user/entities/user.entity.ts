@@ -17,8 +17,8 @@ export class User {
   @Prop()
   email: string;
 
-  // @Prop({ required: true })
-  // salt: string;
+  @Prop({ required: true })
+  salt: string;
 
   // @Prop({ required: true })
   // status: number;
