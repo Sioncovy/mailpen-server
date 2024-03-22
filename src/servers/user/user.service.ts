@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { User } from './entities/user.entity';
+import { ErrorCode } from 'src/constants/error-code';
+import { CommonError } from 'src/errors/common.error';
 import { encryptPassword, makeSalt } from 'src/utils';
 import { CreateUserDto } from './dto/create-user.dto';
-import { CommonError } from 'src/errors/common.error';
-import { ErrorCode } from 'src/constants/error-code';
+import { User } from './entities/user.entity';
 
 @Injectable()
 export class UserService {
   constructor(@InjectModel('User') private readonly userModel: Model<User>) {}
 
-  async register(body: CreateUserDto): Promise<User> {
+  async register(body: CreateUserDto) {
     if (
       body.password.length < 6 ||
       body.password.length > 20 ||
@@ -35,14 +35,15 @@ export class UserService {
     const password = encryptPassword(body.password, salt);
     user.password = password;
     user.salt = salt;
-    return user.save();
+    await user.save();
+    return user.toObject();
   }
 
-  async findOne(username: string): Promise<User | null> {
+  async findOne(username: string) {
     const user = await this.userModel.findOne({ username });
     if (!user) {
       return null;
     }
-    return user.toObject();
+    return user;
   }
 }
