@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 
 export type UserDocument = User & Document;
 
-@Schema()
+@Schema({ timestamps: true })
 export class User {
   @Prop()
   nickname: string;
@@ -23,8 +23,11 @@ export class User {
   // @Prop({ required: true })
   // status: number;
 
-  // @Prop({ required: true })
-  // avatar: string;
+  @Prop({
+    required: true,
+    default: 'https://avatars.githubusercontent.com/u/74760542?v=4',
+  })
+  avatar: string;
 
   // @Prop()
   // bio: string;
