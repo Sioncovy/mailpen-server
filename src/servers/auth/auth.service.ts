@@ -14,7 +14,7 @@ export class AuthService {
   ) {}
 
   async validateUser(username: string, password: string): Promise<UserPublic> {
-    const user = await this.userService.findOne(username);
+    const user = await this.userService.findOneByUsername(username);
     if (!user) {
       throw new CommonError(ErrorCode.UserNotFound, '用户名不存在');
     }
@@ -30,6 +30,7 @@ export class AuthService {
     delete payload._id;
     return {
       access_token: this.jwtService.sign(payload),
+      userInfo: body,
     };
   }
 }

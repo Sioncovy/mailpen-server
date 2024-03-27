@@ -7,6 +7,7 @@ import { CommonError } from 'src/errors/common.error';
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
+    console.log('✨  ~ GlobalExceptionFilter ~ exception:', exception);
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
 
