@@ -31,7 +31,6 @@ export class ContactService {
     const requestList = await this.requestModel
       .find({
         $or: [{ user: userId }, { friend: userId }],
-        status: FriendRequestStatus.Pending,
       })
       .populate(['user', 'friend'])
       .exec();
