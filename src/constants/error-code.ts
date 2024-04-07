@@ -9,4 +9,8 @@ export enum ErrorCode {
   UserUpdateError = 1006,
   UserDeleteError = 1007,
   UserAuthError = 1008,
+
+  // Contact 2000~2999
+  ContactNotFound = 2000,
+  RequestIllegal = 2001,
 }

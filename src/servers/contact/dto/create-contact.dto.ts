@@ -1,6 +1,4 @@
-import { ObjectId } from 'mongoose';
-
 export class CreateContactDto {
-  friendId: ObjectId;
+  friendId: string;
   reason?: string;
 }

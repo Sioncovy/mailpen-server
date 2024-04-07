@@ -25,7 +25,8 @@ export class ContactController {
   }
 
   @Post('requests/:id/approve')
-  async approveContactRequest(@Param('id') requestId: string) {
-    return await this.contactService.approveContactRequest(requestId);
+  async approveContactRequest(@Param('id') requestId: string, @Req() req) {
+    const userId = req.user._id;
+    return await this.contactService.approveContactRequest(requestId, userId);
   }
 }

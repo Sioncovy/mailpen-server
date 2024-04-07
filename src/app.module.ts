@@ -8,6 +8,7 @@ import { AuthModule } from './servers/auth/auth.module';
 import { APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { JwtAuthGuard } from './servers/auth/jwt-auth.guard';
 import { ContactModule } from './servers/contact/contact.module';
+import { MessageModule } from './servers/message/message.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { ContactModule } from './servers/contact/contact.module';
     UserModule,
     AuthModule,
     ContactModule,
+    MessageModule,
   ],
   controllers: [AppController],
   providers: [

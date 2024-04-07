@@ -1,10 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
+import { ErrorCode } from 'src/constants/error-code';
+import { CommonError } from 'src/errors/common.error';
 import { FriendRequestStatus, FriendStatus, UserPublic } from 'src/types';
 import { CreateContactDto } from './dto/create-contact.dto';
 import { ContactDocument } from './entities/contact.entity';
 import { RequestDocument } from './entities/request.entity,';
+import { MessageService } from '../message/message.service';
 
 @Injectable()
 export class ContactService {
@@ -13,12 +16,13 @@ export class ContactService {
     private readonly contactModel: Model<ContactDocument>,
     @InjectModel('Request')
     private readonly requestModel: Model<RequestDocument>,
+    private readonly messageService: MessageService,
   ) {}
 
   async createContactRequest(body: CreateContactDto, user: UserPublic) {
     const request = new this.requestModel({
-      user: user.id,
-      friend: body.friendId,
+      user: new Types.ObjectId(user._id as string),
+      friend: new Types.ObjectId(body.friendId),
       reason: body.reason,
       status: FriendRequestStatus.Pending,
     });
@@ -38,7 +42,7 @@ export class ContactService {
   }
 
   async queryContactList(user: UserPublic) {
-    const userId = user._id;
+    const userId = user._id as string;
     // 查询Contact表中与该用户相关的所有已确认好友记录
     const contactList = await this.contactModel
       .find({ user: userId })
@@ -47,13 +51,17 @@ export class ContactService {
     return contactList;
   }
 
-  async approveContactRequest(requestId: string) {
+  async approveContactRequest(requestId: string, userId: string) {
+    const request = await this.requestModel.findById(requestId).exec();
+    if (
+      request.user.toString() !== userId &&
+      request.friend.toString() !== userId
+    ) {
+      throw new CommonError(ErrorCode.RequestIllegal, '操作的好友申请非法');
+    }
     // 更新好友请求状态为已接受
-    const request = await this.requestModel
-      .findByIdAndUpdate(requestId, {
-        status: FriendRequestStatus.Accepted,
-      })
-      .exec();
+    request.status = FriendRequestStatus.Accepted;
+    request.save();
     // from user to friend
     await new this.contactModel({
       user: request.user,
@@ -68,5 +76,11 @@ export class ContactService {
       status: FriendStatus.Normal,
       request: request._id,
     }).save();
+    await this.messageService.createMessage({
+      content: '我们已经成为好友啦，开始聊天吧',
+      sender: request.friend,
+      receiver: request.user,
+    });
+    return null;
   }
 }
