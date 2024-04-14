@@ -27,4 +27,11 @@ export class Request {
   reason: string;
 }
 
-export const RequestSchema = SchemaFactory.createForClass(Request);
+const RequestSchema = SchemaFactory.createForClass(Request);
+RequestSchema.set('toObject', {
+  transform: (doc, ret) => {
+    delete ret.__v;
+    return ret;
+  },
+});
+export { RequestSchema };

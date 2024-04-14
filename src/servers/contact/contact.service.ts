@@ -44,10 +44,20 @@ export class ContactService {
   async queryContactList(user: UserPublic) {
     const userId = user._id as string;
     // 查询Contact表中与该用户相关的所有已确认好友记录
-    const contactList = await this.contactModel
+    let contactList = await this.contactModel
       .find({ user: userId })
       .populate('friend')
       .exec();
+    contactList = contactList.map((_) => {
+      const friend = _.friend.toObject();
+      const contact = _.toObject();
+      delete contact.friend;
+      delete contact.user;
+      return {
+        ...friend,
+        ...contact,
+      };
+    });
     return contactList;
   }
 

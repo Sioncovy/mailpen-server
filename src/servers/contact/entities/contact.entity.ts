@@ -40,4 +40,11 @@ export class Contact {
   star: boolean;
 }
 
-export const ContactSchema = SchemaFactory.createForClass(Contact);
+const ContactSchema = SchemaFactory.createForClass(Contact);
+ContactSchema.set('toObject', {
+  transform: (doc, ret) => {
+    delete ret.__v;
+    return ret;
+  },
+});
+export { ContactSchema };
