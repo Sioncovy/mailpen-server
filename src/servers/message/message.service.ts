@@ -13,6 +13,7 @@ export class MessageService {
 
   async createMessage(createMessageDto: CreateMessageDto) {
     const message = await this.messageModel.create(createMessageDto);
+    await message.save();
     return message;
   }
 }

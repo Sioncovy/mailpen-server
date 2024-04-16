@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
+import { ChatMessageType } from 'src/types';
 
 export type MessageDocument = Message & Document;
 
@@ -7,6 +8,9 @@ export type MessageDocument = Message & Document;
 export class Message {
   @Prop({ required: true })
   content: string;
+
+  @Prop({ required: true })
+  type: ChatMessageType;
 
   @Prop({
     required: true,

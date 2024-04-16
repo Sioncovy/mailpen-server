@@ -54,8 +54,8 @@ export class ContactService {
       delete contact.friend;
       delete contact.user;
       return {
-        ...friend,
         ...contact,
+        ...friend,
       };
     });
     return contactList;
@@ -88,8 +88,8 @@ export class ContactService {
     }).save();
     await this.messageService.createMessage({
       content: '我们已经成为好友啦，开始聊天吧',
-      sender: request.friend,
-      receiver: request.user,
+      sender: request.friend.toString(),
+      receiver: request.user.toString(),
     });
     return null;
   }
