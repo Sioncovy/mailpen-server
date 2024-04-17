@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, ObjectId, Types } from 'mongoose';
+import { Document, Types } from 'mongoose';
+import { UserDocument } from 'src/servers/user/entities/user.entity';
 import { FriendRequestStatus } from 'src/types';
 
 export type RequestDocument = Request & Document;
@@ -8,11 +9,11 @@ export type RequestDocument = Request & Document;
 export class Request {
   // 用户 id
   @Prop({ required: true, type: Types.ObjectId, ref: 'User' })
-  user: ObjectId;
+  user: UserDocument;
 
   // 好友 id
   @Prop({ required: true, type: Types.ObjectId, ref: 'User' })
-  friend: ObjectId;
+  friend: UserDocument;
 
   // 当前好友状态
   @Prop({
