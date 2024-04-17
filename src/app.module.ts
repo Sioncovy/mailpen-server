@@ -9,6 +9,9 @@ import { APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { JwtAuthGuard } from './servers/auth/jwt-auth.guard';
 import { ContactModule } from './servers/contact/contact.module';
 import { MessageModule } from './servers/message/message.module';
+import { FileModule } from './servers/file/file.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import * as path from 'path';
 
 @Module({
   imports: [
@@ -27,6 +30,10 @@ import { MessageModule } from './servers/message/message.module';
     AuthModule,
     ContactModule,
     MessageModule,
+    FileModule,
+    ServeStaticModule.forRoot({
+      rootPath: path.join(__dirname, '..', 'uploads'),
+    }),
   ],
   controllers: [AppController],
   providers: [

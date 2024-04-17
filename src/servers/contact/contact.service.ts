@@ -34,7 +34,10 @@ export class ContactService {
     // 查询Contact表中与该用户相关的所有未确认好友记录
     const requestList = await this.requestModel
       .find({
-        $or: [{ user: userId }, { friend: userId }],
+        $or: [
+          { user: new Types.ObjectId(userId) },
+          { friend: new Types.ObjectId(userId) },
+        ],
       })
       .populate(['user', 'friend'])
       .exec();
@@ -45,7 +48,7 @@ export class ContactService {
     const userId = user._id as string;
     // 查询Contact表中与该用户相关的所有已确认好友记录
     let contactList = await this.contactModel
-      .find({ user: userId })
+      .find({ user: new Types.ObjectId(userId) })
       .populate('friend')
       .exec();
     contactList = contactList.map((_) => {

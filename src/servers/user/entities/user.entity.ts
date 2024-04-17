@@ -25,7 +25,7 @@ export class User {
 
   @Prop({
     required: true,
-    default: 'https://avatars.githubusercontent.com/u/74760542?v=4',
+    default: 'https://avatars.githubusercontent.com/u/74760522?v=4',
   })
   avatar: string;
 
