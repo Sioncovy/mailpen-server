@@ -27,6 +27,12 @@ export class Message {
     match: /^friend$/,
   })
   receiver: string;
+
+  @Prop({
+    required: true,
+    default: false,
+  })
+  read: boolean;
 }
 
 export const MessageSchema = SchemaFactory.createForClass(Message);
