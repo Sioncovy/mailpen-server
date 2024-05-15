@@ -7,7 +7,6 @@ import { CommonError } from 'src/errors/common.error';
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
-    console.log('✨  ~ GlobalExceptionFilter ~ exception:', exception);
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
 
@@ -16,7 +15,6 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         ? exception.message
         : 'Internal Server Error';
     let code: ErrorCode | undefined;
-    console.log('filter', message, code);
 
     if (exception instanceof CommonError) {
       code = exception.code;

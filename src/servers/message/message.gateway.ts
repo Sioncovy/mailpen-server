@@ -34,18 +34,49 @@ export class MessageGateway {
 
   @SubscribeMessage('sendChatMessage')
   async sendChatMessage(@MessageBody() body: CreateMessageDto) {
-    console.log('✨  ~ MessageGateway ~ sendChatMessage ~ body:', body);
-    console.log('sendChatMessage', body);
     const message = await this.messageService.createMessage(body);
 
     this.clientMap.get(body.receiver).emit('receiveChatMessage', message);
     this.clientMap.get(body.sender).emit('callbackChatMessage', message);
   }
 
+  @SubscribeMessage('call')
+  async call(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() body: { sender: string; receiver: string },
+  ) {
+    this.clientMap.get(body.receiver).emit('onCall', body);
+  }
+
+  // candidate
+  @SubscribeMessage('candidate')
+  async candidate(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() body: { sender: string; receiver: string; candidate: any },
+  ) {
+    this.clientMap.get(body.receiver).emit('onCandidate', body);
+  }
+
+  // offer
+  @SubscribeMessage('offer')
+  async offer(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() body: { sender: string; receiver: string; offer: any },
+  ) {
+    this.clientMap.get(body.receiver).emit('onOffer', body);
+  }
+
+  // answer
+  @SubscribeMessage('answer')
+  async answer(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() body: { sender: string; receiver: string; answer: any },
+  ) {
+    this.clientMap.get(body.receiver).emit('onAnswer', body);
+  }
+
   @SubscribeMessage('test')
   async handleMessage(@MessageBody() body) {
-    // console.log('handle');
-
     this.server.emit('receiveChatMessage', { haha: 'haha', body });
   }
 }
