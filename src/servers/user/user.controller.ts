@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   Post,
+  Put,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -47,5 +48,13 @@ export class UserController {
       throw new CommonError(ErrorCode.UserNotFound, '用户不存在');
     }
     return user.toObject();
+  }
+
+  @Put('resetPassword')
+  async resetPassword(@Body() body: { password: string }, @Req() req) {
+    return this.userService.resetPassword({
+      ...body,
+      id: req.user.id,
+    });
   }
 }

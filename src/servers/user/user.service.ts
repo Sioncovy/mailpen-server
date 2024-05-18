@@ -50,4 +50,26 @@ export class UserService {
     }
     return user;
   }
+
+  async resetPassword(body: { password: string; id: string }) {
+    if (
+      body.password.length < 6 ||
+      body.password.length > 20 ||
+      !/^\S*(?=\S{6,})(?=\S*\d)(?=\S*[A-Z])(?=\S*[a-z])(?=\S*[!@#$%^&*? ])\S*$/.test(
+        body.password,
+      )
+    ) {
+      throw new CommonError(ErrorCode.UserPasswordError, '密码不符合要求');
+    }
+    const user = await this.userModel.findById(body.id);
+    if (!user) {
+      throw new CommonError(ErrorCode.UserNotFound, '用户不存在');
+    }
+    const salt = makeSalt();
+    const password = encryptPassword(body.password, salt);
+    user.password = password;
+    user.salt = salt;
+    await user.save();
+    return user.toObject();
+  }
 }
