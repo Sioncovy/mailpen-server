@@ -43,7 +43,8 @@ export class MessageGateway {
   @SubscribeMessage('call')
   async call(
     @ConnectedSocket() client: Socket,
-    @MessageBody() body: { sender: string; receiver: string },
+    @MessageBody()
+    body: { sender: string; receiver: string; type: 'audio' | 'video' },
   ) {
     this.clientMap.get(body.receiver).emit('onCall', body);
   }
