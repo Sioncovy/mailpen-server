@@ -16,4 +16,10 @@ export class MessageService {
     await message.save();
     return message;
   }
+
+  async read(id: string) {
+    this.messageModel.findByIdAndUpdate(id, {
+      read: true,
+    });
+  }
 }

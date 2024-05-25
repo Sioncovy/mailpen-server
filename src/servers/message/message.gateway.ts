@@ -80,4 +80,11 @@ export class MessageGateway {
   async handleMessage(@MessageBody() body) {
     this.server.emit('receiveChatMessage', { haha: 'haha', body });
   }
+
+  @SubscribeMessage('readMessage')
+  async readAll(@MessageBody() body: { id: string; receiver: string }) {
+    this.messageService.read(body.id);
+    this.clientMap.get(body.receiver).emit('onReadMessage', { id: body.id });
+    this.server.emit('onReadMessage', { id: body.id });
+  }
 }
