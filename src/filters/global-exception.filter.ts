@@ -1,19 +1,21 @@
 // error.filter.ts
-import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
+import {
+  ArgumentsHost,
+  Catch,
+  ExceptionFilter,
+  HttpException,
+} from '@nestjs/common';
 import { Response } from 'express';
 import { ErrorCode } from 'src/constants/error-code';
 import { CommonError } from 'src/errors/common.error';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
-  catch(exception: unknown, host: ArgumentsHost) {
+  catch(exception: HttpException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
 
-    let message =
-      exception instanceof CommonError
-        ? exception.message
-        : 'Internal Server Error';
+    let message = exception.message;
     let code: ErrorCode | undefined;
 
     if (exception instanceof CommonError) {
@@ -22,7 +24,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     }
 
     response.status(200).json({
-      code,
+      code: code || 0,
       message,
     });
   }

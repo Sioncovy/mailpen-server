@@ -8,6 +8,8 @@ import { CreateContactDto } from './dto/create-contact.dto';
 import { ContactDocument } from './entities/contact.entity';
 import { RequestDocument } from './entities/request.entity,';
 import { MessageService } from '../message/message.service';
+import { UpdateContactDto } from './dto/update-contact.dto';
+import { genBaseErr } from 'src/utils';
 
 @Injectable()
 export class ContactService {
@@ -64,6 +66,28 @@ export class ContactService {
     return contactList;
   }
 
+  async updateContact(
+    contactId: string,
+    user: UserPublic,
+    body: UpdateContactDto,
+  ) {
+    const userId = user._id as string;
+    const contact = await this.contactModel
+      .findOne({
+        friend: new Types.ObjectId(contactId),
+        user: new Types.ObjectId(userId),
+      })
+      .exec();
+    console.log('✨  ~ ContactService ~ contact:', contact, body);
+    if (!contact) {
+      throw new genBaseErr('好友不存在');
+    }
+    contact.remark = body.remark;
+    // contact.group = body.group;
+    contact.star = body.star;
+    return await contact.save();
+  }
+
   async approveContactRequest(requestId: string, userId: string) {
     const request = await this.requestModel.findById(requestId).exec();
     if (
@@ -95,5 +119,26 @@ export class ContactService {
       receiver: request.user.toString(),
     });
     return null;
+  }
+
+  async queryContact(friendId: string, userId: string) {
+    let contact = await this.contactModel
+      .findOne({
+        user: new Types.ObjectId(userId),
+        friend: new Types.ObjectId(friendId),
+      })
+      .populate('friend')
+      .exec();
+    if (!contact) {
+      throw new genBaseErr('好友不存在');
+    }
+    const friend = contact.friend.toObject();
+    contact = contact.toObject();
+    delete contact.friend;
+    delete contact.user;
+    return {
+      ...contact,
+      ...friend,
+    };
   }
 }
