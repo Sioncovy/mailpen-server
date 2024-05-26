@@ -5,3 +5,9 @@ export enum ChatMessageType {
   Video,
   File,
 }
+
+export enum MessageSpecialType {
+  Normal,
+  BurnAfterReading,
+  BurnAfterTime,
+}

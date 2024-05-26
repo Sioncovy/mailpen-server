@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongoSchema, Types } from 'mongoose';
-import { ChatMessageType } from 'src/types';
+import { ChatMessageType, MessageSpecialType } from 'src/types';
 
 export type MessageDocument = Message & Document;
 
@@ -14,6 +14,12 @@ export class Message {
 
   @Prop({ required: true })
   type: ChatMessageType;
+
+  @Prop({
+    required: true,
+    default: MessageSpecialType.Normal,
+  })
+  special: MessageSpecialType;
 
   @Prop({
     required: true,
@@ -38,4 +44,18 @@ export class Message {
   read: boolean;
 }
 
-export const MessageSchema = SchemaFactory.createForClass(Message);
+const MessageSchema = SchemaFactory.createForClass(Message);
+MessageSchema.set('toObject', {
+  transform: (doc, ret) => {
+    delete ret.__v;
+    return ret;
+  },
+});
+MessageSchema.set('toJSON', {
+  transform: (doc, ret) => {
+    delete ret.__v;
+    return ret;
+  },
+});
+
+export { MessageSchema };

@@ -8,6 +8,8 @@ import {
 import { Server, Socket } from 'socket.io';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { MessageService } from './message.service';
+import { forwardRef, Inject } from '@nestjs/common';
+import { MessageDocument } from './entities/message.entity';
 
 @WebSocketGateway({
   cors: true,
@@ -17,7 +19,10 @@ export class MessageGateway {
   server: Server;
   clientMap = new Map<string, Socket>();
 
-  constructor(private readonly messageService: MessageService) {}
+  constructor(
+    @Inject(forwardRef(() => MessageService))
+    private readonly messageService: MessageService,
+  ) {}
 
   // @SubscribeMessage('connection')
   // async handleConnection(@ConnectedSocket() client: Socket) {
@@ -86,5 +91,10 @@ export class MessageGateway {
     this.messageService.read(body.id);
     this.clientMap.get(body.receiver).emit('onReadMessage', { id: body.id });
     this.server.emit('onReadMessage', { id: body.id });
+  }
+
+  async updateMessage(message: MessageDocument) {
+    console.log('✨  ~ MessageGateway ~ updateMessage ~ message:', message);
+    this.server.emit('onUpdateMessage', message);
   }
 }
