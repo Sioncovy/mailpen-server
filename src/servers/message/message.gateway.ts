@@ -97,4 +97,14 @@ export class MessageGateway {
     console.log('✨  ~ MessageGateway ~ updateMessage ~ message:', message);
     this.server.emit('onUpdateMessage', message);
   }
+
+  @SubscribeMessage('withdrawMessage')
+  async withdrawMessage(
+    @MessageBody() body: { id: string; chatId: string; receiver: string },
+  ) {
+    this.clientMap
+      .get(body.receiver)
+      .emit('onWithdrawMessage', { id: body.id, chatId: body.chatId });
+    this.server.emit('onWithdrawMessage', { id: body.id, chatId: body.chatId });
+  }
 }
