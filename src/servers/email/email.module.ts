@@ -18,7 +18,7 @@ import { emailConfig } from 'src/config';
         from: emailConfig.from,
       },
       template: {
-        dir: `${process.cwd()}/src/server/email/template`,
+        dir: `${process.cwd()}/src/servers/email/template`,
         adapter: new EjsAdapter(),
         options: {
           strict: true,

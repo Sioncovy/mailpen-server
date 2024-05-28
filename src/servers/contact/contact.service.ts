@@ -1,15 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { ErrorCode } from 'src/constants/error-code';
-import { CommonError } from 'src/errors/common.error';
 import { FriendRequestStatus, FriendStatus, UserPublic } from 'src/types';
+import { genBaseErr } from 'src/utils';
+import { MessageService } from '../message/message.service';
 import { CreateContactDto } from './dto/create-contact.dto';
+import { UpdateContactDto } from './dto/update-contact.dto';
 import { ContactDocument } from './entities/contact.entity';
 import { RequestDocument } from './entities/request.entity,';
-import { MessageService } from '../message/message.service';
-import { UpdateContactDto } from './dto/update-contact.dto';
-import { genBaseErr } from 'src/utils';
 
 @Injectable()
 export class ContactService {

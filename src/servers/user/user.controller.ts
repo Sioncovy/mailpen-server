@@ -46,6 +46,13 @@ export class UserController {
   @Public()
   @Post('/register')
   async register(@Body() body: CreateUserDto) {
+    const { username, code } = body;
+    const redis = await RedisIntance.initRedis('user.register', 0);
+    const rawcode = await redis.get(`emailCode-${username}`);
+    if (code?.toLowerCase() !== rawcode?.toLowerCase()) {
+      genBaseErr('邮箱验证码错误');
+    }
+
     return this.userService.register(body);
   }
 

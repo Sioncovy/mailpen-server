@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
 import { ErrorCode } from 'src/constants/error-code';
 import { CommonError } from 'src/errors/common.error';
-import { encryptPassword, makeSalt } from 'src/utils';
+import { encryptPassword, genBaseErr, makeSalt } from 'src/utils';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 
@@ -19,12 +19,11 @@ export class UserService {
         body.password,
       )
     ) {
-      throw new CommonError(ErrorCode.UserPasswordError, '密码不符合要求');
+      genBaseErr('密码不符合要求，6-20位，包含大小写字母和特殊符号');
     }
-    // TODO: 邮箱也要是唯一的
     const isExist = Boolean(await this.findOneByUsername(body.username));
     if (isExist) {
-      throw new CommonError(ErrorCode.UserAlreadyExist, '用户名已存在');
+      genBaseErr('用户名已存在');
     }
     const user = new this.userModel(body);
     const salt = makeSalt();
