@@ -94,7 +94,8 @@ export class ContactService {
       request.user.toString() !== userId &&
       request.friend.toString() !== userId
     ) {
-      throw new CommonError(ErrorCode.RequestIllegal, '操作的好友申请非法');
+      genBaseErr('操作的好友申请非法');
+      return;
     }
     // 更新好友请求状态为已接受
     request.status = FriendRequestStatus.Accepted;
@@ -140,5 +141,21 @@ export class ContactService {
       ...contact,
       ...friend,
     };
+  }
+
+  async deleteContact(friendId: string, userId: string) {
+    await this.contactModel
+      .findOneAndDelete({
+        user: new Types.ObjectId(userId),
+        friend: new Types.ObjectId(friendId),
+      })
+      .exec();
+    await this.contactModel
+      .findOneAndDelete({
+        user: new Types.ObjectId(friendId),
+        friend: new Types.ObjectId(userId),
+      })
+      .exec();
+    return null;
   }
 }

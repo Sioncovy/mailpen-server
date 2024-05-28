@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Post, Put, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Req,
+} from '@nestjs/common';
 import { ContactService } from './contact.service';
 import { CreateContactDto } from './dto/create-contact.dto';
 import { UpdateContactDto } from './dto/update-contact.dto';
@@ -47,9 +56,17 @@ export class ContactController {
     return await this.contactService.approveContactRequest(requestId, userId);
   }
 
+  // 查询好友信息
   @Get(':id')
   async queryContact(@Param('id') friendId: string, @Req() req) {
     const userId = req.user._id;
     return await this.contactService.queryContact(friendId, userId);
+  }
+
+  // 删除好友
+  @Delete(':id')
+  async deleteContact(@Param('id') friendId: string, @Req() req) {
+    const userId = req.user._id;
+    return await this.contactService.deleteContact(friendId, userId);
   }
 }

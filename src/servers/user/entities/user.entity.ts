@@ -29,8 +29,8 @@ export class User {
   })
   avatar: string;
 
-  // @Prop()
-  // bio: string;
+  @Prop()
+  bio: string;
 }
 
 const UserSchema = SchemaFactory.createForClass(User);
