@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { ErrorCode } from 'src/constants/error-code';
-import { CommonError } from 'src/errors/common.error';
 import { UserService } from 'src/servers/user/user.service';
 import { UserPublic } from 'src/types';
-import { encryptPassword } from 'src/utils';
+import { encryptPassword, genBaseErr } from 'src/utils';
+import { LoginUserDto } from '../user/dto/login-user.dto';
 // import * as qiniu from 'qiniu';
 
 @Injectable()
@@ -19,22 +18,22 @@ export class AuthService {
   async validateUser(username: string, password: string): Promise<UserPublic> {
     const user = await this.userService.findOneByUsername(username);
     if (!user) {
-      throw new CommonError(ErrorCode.UserNotFound, '用户名不存在');
+      genBaseErr('用户不存在');
     }
     const salt = user.salt;
     if (user.password !== encryptPassword(password, salt)) {
-      throw new CommonError(ErrorCode.UserAuthError, '账号或密码错误');
+      genBaseErr('账号或密码错误');
     }
     return user.toObject();
   }
 
-  async login(body: UserPublic) {
-    const payload = { sub: body._id, ...body };
-    delete payload._id;
+  async login(body: LoginUserDto) {
+    const user = await this.validateUser(body.username, body.password);
+    console.log('✨  ~ AuthService ~ login ~ user:', user);
     return {
-      accessToken: this.jwtService.sign(payload),
+      accessToken: this.jwtService.sign(user),
       // uploadToken: await this.getUploadToken(),
-      userInfo: body,
+      userInfo: user,
     };
   }
 

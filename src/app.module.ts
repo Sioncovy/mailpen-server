@@ -12,6 +12,7 @@ import { MessageModule } from './servers/message/message.module';
 import { FileModule } from './servers/file/file.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import * as path from 'path';
+import { EmailModule } from './servers/email/email.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import * as path from 'path';
     ContactModule,
     MessageModule,
     FileModule,
+    EmailModule,
     ServeStaticModule.forRoot({
       rootPath: path.join(__dirname, '..', 'uploads'),
     }),
