@@ -24,6 +24,6 @@ export class MessageService {
     const msg = await this.messageModel.findById(id);
     msg.read = true;
     await msg.save();
-    this.messageGateway.updateMessage(msg);
+    // this.messageGateway.updateMessage(msg);
   }
 }
