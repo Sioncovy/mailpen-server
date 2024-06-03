@@ -10,6 +10,9 @@ import { CreateMessageDto } from './dto/create-message.dto';
 import { MessageService } from './message.service';
 import { forwardRef, Inject } from '@nestjs/common';
 import { MessageDocument } from './entities/message.entity';
+import { ConfigService } from '@nestjs/config';
+import * as forge from 'node-forge';
+import * as crypto from 'crypto-js';
 
 @WebSocketGateway({
   cors: true,
@@ -22,6 +25,7 @@ export class MessageGateway {
   constructor(
     @Inject(forwardRef(() => MessageService))
     private readonly messageService: MessageService,
+    private readonly configService: ConfigService,
   ) {}
 
   // @SubscribeMessage('connection')
@@ -29,17 +33,42 @@ export class MessageGateway {
   //   this.clientMap.set(client.id, client);
   // }
 
+  getAesKey() {
+    return this.configService.get('AES_KEY');
+  }
+
   @SubscribeMessage('login')
   async login(
     @ConnectedSocket() client: Socket,
-    @MessageBody() body: { id: string },
+    @MessageBody() body: { id: string; key: string },
   ) {
-    this.clientMap.set(body.id, client);
+    const { id, key } = body;
+    this.clientMap.set(id, client);
+
+    const publicKey = forge.pki.publicKeyFromPem(key);
+    const aesKey = this.getAesKey();
+
+    const encryptedAesKey = publicKey.encrypt(aesKey, 'RSA-OAEP', {
+      md: forge.md.sha256.create(),
+    });
+
+    const encryptedAesKeyBase64 = forge.util.encode64(encryptedAesKey);
+    this.server.emit('onAesKey', { key: encryptedAesKeyBase64 });
   }
 
   @SubscribeMessage('sendChatMessage')
   async sendChatMessage(@MessageBody() body: CreateMessageDto) {
-    const message = await this.messageService.createMessage(body);
+    const encryptedContent = body.content;
+    const content = crypto.AES.decrypt(encryptedContent, this.getAesKey());
+    const message = await this.messageService.createMessage({
+      ...body,
+      content,
+    });
+    message.content = crypto.AES.encrypt(
+      message.content,
+      this.getAesKey(),
+    ).toString();
+    console.log('✨  ~ MessageGateway ~ sendChatMessage ~ message:', message);
 
     this.clientMap.get(body.receiver).emit('receiveChatMessage', message);
     this.clientMap.get(body.sender).emit('callbackChatMessage', message);
