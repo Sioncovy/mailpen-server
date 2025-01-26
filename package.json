@@ -30,7 +30,7 @@
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/platform-socket.io": "^10.3.7",
-    "@nestjs/serve-static": "^4.0.2",
+    "@nestjs/serve-static": "^5.0.0",
     "@nestjs/websockets": "^10.3.7",
     "@socket.io/redis-adapter": "^8.3.0",
     "@types/crypto-js": "^4.2.2",
