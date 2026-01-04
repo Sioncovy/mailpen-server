@@ -28,7 +28,7 @@
     "@nestjs/mapped-types": "*",
     "@nestjs/mongoose": "^10.0.4",
     "@nestjs/passport": "^10.0.3",
-    "@nestjs/platform-express": "^10.0.0",
+    "@nestjs/platform-express": "^11.0.13",
     "@nestjs/platform-socket.io": "^10.3.7",
     "@nestjs/serve-static": "^4.0.2",
     "@nestjs/websockets": "^10.3.7",
